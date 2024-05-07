@@ -22,17 +22,30 @@ async function transcribeYoutubeVideo(_: any, formData: FormData) {
         {
           role: 'system',
           content:
-            'You provide the best summarizer and key takeaways from the provided text. Use bullet points for key takeaways.',
+            'You are given an array of items with text, duration, offset, and language. You will provide key points from the entire',
         },
         {
           role: 'user',
-          content: `Summarize and then provide key takeaway for this text: ${stringTranscript} `,
+          content: `from this array, give me key points and return the timestamp in which they exist, the timestamp is in seconds, so do offset - duration in seconds: ${JSON.stringify(
+            transcript
+          )}`,
+        },
+        {
+          role: 'system',
+          content: `The answer must be an array with items like this, only return an array and nothing else return a string with the array only:
+            {
+              keypoint: 'this is the key point',
+              duration: 'duration from the array item',
+              offset: 'offset from the array item'
+            }
+          `,
         },
       ],
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4-turbo',
     })
 
-    const takeaway = chatCompletion.choices[0].message?.content as string
+    const takeaway = chatCompletion.choices[0].message?.content
+
     revalidatePath('/')
     // open ai
     return {

@@ -5,7 +5,6 @@ import { useFormState } from 'react-dom'
 import FormButton from './FormButton'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
-import MarkdownRenderer from './MarkdownRenderer'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -55,10 +54,26 @@ const TranscriptView = () => {
         <FormButton>AI Summarize</FormButton>
       </form>
       <div className="">
-        {state.takeaway && (
-          <div>
-            <MarkdownRenderer content={state.takeaway} />
-          </div>
+        {state.takeaway && state.takeaway?.length > 0 && (
+          <ul className="space-y-2">
+            {JSON.parse(state.takeaway)?.map(
+              (
+                val: { keypoint: string; duration: number; offset: number },
+                i: number
+              ) => (
+                <li key={i}>
+                  {val.keypoint} |{' '}
+                  <Link
+                    className="text-blue-400"
+                    target="_blank"
+                    href={`${thumbnail?.url}&t=${val.offset - val.duration}s`}
+                  >
+                    View Video at timestamp
+                  </Link>
+                </li>
+              )
+            )}
+          </ul>
         )}
       </div>
       {state.takeaway && thumbnail && (
